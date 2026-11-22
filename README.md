@@ -1,20 +1,74 @@
-# EP03 — Chat Server em Go
+# EP03 - Chat server em Go
 
-Implementação de servidor de chat concorrente em Go via TCP (`localhost:4444`), composto por servidor, cliente e bot reativo.
+## Integrantes
 
-**Integrantes:** Emanuelly Gomes e Gabriel Frasão
+- Emanuelly Gomes
+- Gabriel Frasão
 
-## Estrutura do Projeto
+## Como executar
 
-- `cmd/server/server.go`: servidor TCP com hub centralizado via goroutines e channels.
-- `cmd/client/client.go`: cliente de terminal interativo.
-- `cmd/bot/bot.go`: bot reativo que inverte mensagens privadas recebidas.
-- `internal/protocol/consts.go`: constantes e configurações compartilhadas do protocolo.
+Execute os comandos a partir da raiz do repositório.
 
-## Como Executar
+### Servidor
 
-Abra terminais separados na raiz do projeto e execute:
+```bash
+go run ./cmd/server
+```
 
-1. **Servidor:**
-   ```bash
-   go run ./cmd/server
+### Cliente
+
+Com um apelido explícito:
+
+```bash
+go run ./cmd/client Alice
+```
+
+Sem argumento, o cliente pede o apelido antes de conectar:
+
+```bash
+go run ./cmd/client
+# Apelido:
+```
+
+### Bot
+
+```bash
+# Apelido para o bot é opcional, o padrão já é Inversor
+go run ./cmd/bot Inversor
+```
+
+## Organização
+
+O projeto usa o módulo Go `ep3-paradigmas` e o pacote interno `internal/protocol` para compartilhar as constantes entre servidor, cliente e bot.
+
+## Protocolo
+
+### Handshake
+
+O cliente e o bot se identificam com uma linha no formato `START`:
+
+```text
+START USER <apelido>
+START BOT <apelido>
+```
+
+### Comandos do cliente
+
+| Comando | Efeito |
+|---|---|
+| `\changenick <apelido>` | Troca o apelido do usuário. |
+| `\msg <mensagem>` | Envia uma mensagem pública. |
+| `\msg @<apelido> <mensagem>` | Envia uma mensagem privada para `@<apelido>`. |
+| `\exit` | Encerra a sessão e fecha o cliente. |
+
+## Testes
+
+```bash
+go test ./...
+```
+
+Com o detector de corrida:
+
+```bash
+go test -race ./...
+```
